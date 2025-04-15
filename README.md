@@ -1,5 +1,8 @@
 # 📬 smtp2zoho
 
+[![Docker Pulls](https://img.shields.io/docker/pulls/lacinf/smtp2zoho?style=flat-square)](https://hub.docker.com/r/lacinf/smtp2zoho)
+[![Docker Image Version (latest by date)](https://img.shields.io/docker/v/lacinf/smtp2zoho?sort=date&label=version&style=flat-square)](https://hub.docker.com/r/lacinf/smtp2zoho/tags)
+
 **Minimal SMTP server that receives emails and forwards them to the [Zoho Mail API](https://www.zoho.com/mail/help/api/overview.html)**.
 
 Built for `arm64` systems — compatible with Oracle Cloud Ampere, AWS Graviton, Raspberry Pi 4+, and more.
