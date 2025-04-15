@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  smtp2zoho:
+    image: lacinf/smtp2zoho:0.1
+    container_name: smtp2zoho
+    ports:
+      - "1025:1025"
+    environment:
+      ZOHO_API_URL: https://mail.zoho.com/api/accounts/your_account_id/messages
+      ZOHO_TOKEN: Zoho-oauthtoken your_token_here
+      ZOHO_FROM_ADDRESS: alerts@yourdomain.com
