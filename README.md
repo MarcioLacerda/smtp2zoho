@@ -15,7 +15,8 @@ Built for `arm64` systems — compatible with Oracle Cloud Ampere, AWS Graviton,
 
 - 📩 Accepts emails via SMTP (plain or HTML)
 - 🚀 Sends `to`, `subject`, and `body` to the Zoho Mail API
-- 🛡️ Uses fixed `fromAddress` from environment (ensures compliance with Zoho's authorized senders)
+- 🛡️ Supports both access token and refresh token OAuth flows
+- 🔁 Automatically retrieves access tokens using a `refresh_token`
 - 🧠 Designed for multi-client usage via container-level config
 - 🧱 Lightweight Alpine base — ideal for ARM64 deployments
 
@@ -25,42 +26,63 @@ Built for `arm64` systems — compatible with Oracle Cloud Ampere, AWS Graviton,
 
 ### 🔧 Environment variables required:
 
-| Variable              | Description                            | Example                                           |
-|-----------------------|----------------------------------------|---------------------------------------------------|
-| `ZOHO_API_URL`        | Zoho Mail API endpoint                 | `https://mail.zoho.com/api/accounts/123456789/messages` |
-| `ZOHO_TOKEN`          | Authorization token (OAuth)            | `Zoho-oauthtoken abcdef123456`                   |
-| `ZOHO_FROM_ADDRESS`   | Fixed sender (must be authorized)      | `alerts@yourdomain.com`                          |
+| Variable               | Description                               | Example                                           |
+|------------------------|-------------------------------------------|---------------------------------------------------|
+| `ZOHO_API_URL`         | Zoho Mail API endpoint                    | `https://mail.zoho.com/api/accounts/123456789/messages` |
+| `ZOHO_FROM_ADDRESS`    | Authorized sender address                 | `alerts@yourdomain.com`                          |
+| `ZOHO_TOKEN`           | (Optional) Access token                   | `Zoho-oauthtoken abcdef123456`                   |
+| `ZOHO_CLIENT_ID`       | (Optional) Client ID for token refresh    | `1000.xxxxxxx`                                   |
+| `ZOHO_CLIENT_SECRET`   | (Optional) Client secret                  | `zzzzzzzzzzzz`                                   |
+| `ZOHO_REFRESH_TOKEN`   | (Optional) Refresh token for auto-renewal | `1000.yyyyyyyyy`                                 |
 
 ---
-
-### 🚀 Run with Docker
-
 <pre> ```bash #
 docker run -p 1025:1025 \
   -e ZOHO_API_URL="https://mail.zoho.com/api/accounts/123456789/messages" \
-  -e ZOHO_TOKEN="Zoho-oauthtoken abcdef1234567890" \
   -e ZOHO_FROM_ADDRESS="alerts@yourdomain.com" \
-  lacinf/smtp2zoho:0.1
+  -e ZOHO_CLIENT_ID="your_client_id" \
+  -e ZOHO_CLIENT_SECRET="your_client_secret" \
+  -e ZOHO_REFRESH_TOKEN="your_refresh_token" \
+  lacinf/smtp2zoho:0.2
 ``` </pre>
-
 ---
 
-### ⚙️ Example: docker-compose.yml
-
+## ⚙️ Example: docker-compose.yml
 <pre> ```yaml #
 version: '3.8'
+
 services:
   smtp2zoho:
-    image: lacinf/smtp2zoho:0.1
+    image: lacinf/smtp2zoho:0.2
+    container_name: smtp2zoho
     ports:
       - "1025:1025"
     environment:
       ZOHO_API_URL: https://mail.zoho.com/api/accounts/123456789/messages
-      ZOHO_TOKEN: Zoho-oauthtoken abcdef1234567890
       ZOHO_FROM_ADDRESS: alerts@yourdomain.com
+      ZOHO_CLIENT_ID: your_client_id
+      ZOHO_CLIENT_SECRET: your_client_secret
+      ZOHO_REFRESH_TOKEN: your_refresh_token
 ``` </pre>
+---
+
+## 🔐 Token Management
+
+You can now use either:
+
+- A short-lived `access_token` (via `ZOHO_TOKEN`), **or**
+- A long-lived `refresh_token` along with `ZOHO_CLIENT_ID` and `ZOHO_CLIENT_SECRET` for automated renewal
+
+If `ZOHO_TOKEN` is not defined, the service will automatically retrieve a new `access_token` using the refresh flow.
 
 ---
+
+## 🗂 Supported Versions
+
+| Tag   | Feature set                          |
+|--------|--------------------------------------|
+| `0.1`  | Static access token only             |
+| `0.2`  | Automatic token refresh (recommended)|
 
 ---
 
@@ -74,7 +96,7 @@ services:
 
 ## 🧑‍💻 Author & Credits
 
-- ✨ Project by [Marcio Lacerda](https://github.com/MarcioLacerda) & ChatGPT (code + docs)
+- ✨ Project by [Fabiana Azevedo](https://github.com/fabianaadelaide) & ChatGPT (code + docs)
 - 💡 Based on original work by [@alash3al](https://github.com/alash3al)
 
 ---
